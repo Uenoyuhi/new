@@ -7,72 +7,47 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    #controls {
+      padding: 20px;
       text-align: center;
     }
-    button {
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .genre-select {
+      font-size: 18px;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .submit-button {
+      font-size: 18px;
       padding: 10px 20px;
-      margin-top: 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
     }
-    input[type="text"] {
-      padding: 10px;
-      width: 80%;
-      margin: 10px 0;
-    }
-    select {
-      padding: 10px;
-      width: 80%;
-      margin: 10px 0;
+    .submit-button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h1>検索オプションを選択</h1>
+  <h1>ジャンルを選択</h1>
 
-  <div id="controls">
-    <!-- フリーワード検索を別の行に移動 -->
-    <div>
-      <label for="keyword">フリーワード検索:</label><br>
-      <input type="text" id="keyword" placeholder="例: 人気のカフェ、静かな公園">
-    </div>
-    
-    <!-- ジャンルの選択肢を別の行に移動 -->
-    <div>
-      <label for="place-type">ジャンルを選択:</label><br>
-      <select id="place-type">
-        <option value="">ジャンルを選択 (任意)</option>
-        <option value="restaurant">レストラン</option>
-        <option value="cafe">カフェ</option>
-        <option value="tourist_attraction">観光地</option>
-        <option value="park">公園</option>
-        <option value="museum">博物館</option>
-        <option value="bar">バー</option>
-        <option value="night_club">ナイトクラブ</option>
-        <option value="shopping_mall">ショッピングモール</option>
-        <option value="gym">ジム</option>
-        <option value="library">図書館</option>
-      </select>
-    </div>
+  <!-- ジャンル選択 -->
+  <form id="genre-form" action="display_videos.html" method="GET">
+    <select id="genre-select" name="genre" class="genre-select" required>
+      <option value="videos_restaurant">レストラン</option>
+      <option value="videos_cafe">カフェ</option>
+      <option value="videos_tourist_spot">観光スポット</option>
+      <option value="videos_park">公園</option>
+      <option value="videos_others">その他</option>
+    </select>
+    <br>
+    <button type="submit" class="submit-button">次へ</button>
+  </form>
 
-    <button onclick="goToSearchResults()">検索</button>
-  </div>
-
-  <script>
-    function goToSearchResults() {
-      const selectedType = document.getElementById('place-type').value;
-      const keyword = document.getElementById('keyword').value;
-
-      // フリーワードとジャンルをURLパラメータとして検索結果ページに渡す
-      window.location.href = `results.html?type=${selectedType}&keyword=${encodeURIComponent(keyword)}`;
-    }
-  </script>
 </body>
 </html>
-s
