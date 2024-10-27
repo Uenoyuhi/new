@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>検索結果</title>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+    #places-list {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #places-list li {
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .place-photo {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 5px;
+      transition: transform 0.2s;
+    }
+    .place-photo:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>検索結果</h1>
+
+  <div id="map"></div>
+
+  <h2>結果一覧:</h2>
+  <ul id="places-list"></ul>
+
+  <script>
+    let map;
+    let service;
+    let infowindow;
+
+    function initMap() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: userLocation,
+            zoom: 15
+          });
+
+          infowindow = new google.maps.InfoWindow();
+          findNearbyPlaces();
+        }, function() {
+          alert('位置情報を取得できませんでした。');
+        });
+      } else {
+        alert('このブラウザでは位置情報がサポートされていません。');
+      }
+    }
+
+    function findNearbyPlaces() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const selectedType = urlParams.get('type');
+      const keyword = urlParams.get('keyword');
+      const userLocation = map.getCenter();
+
+      const request = {
+        location: userLocation,
+        radius: '1000',
+        keyword: keyword,  // フリーワード検索に対応
+        type: selectedType || undefined  // ジャンルが選択された場合にのみ使用
+      };
+
+      service = new google.maps.places.PlacesService(map);
+      service.nearbySearch(request, function(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          document.getElementById('places-list').innerHTML = '';
+          for (let i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+            displayPlace(results[i]);
+          }
+        } else {
+          alert('場所が見つかりませんでした。');
+        }
+      });
+    }
+
+    function createMarker(place) {
+      const marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+      });
+    }
+
+    function displayPlace(place) {
+      const placesList = document.getElementById('places-list');
+      const li = document.createElement('li');
+
+      if (place.photos && place.photos.length > 0) {
+        const photo = document.createElement('img');
+        photo.classList.add('place-photo');
+        photo.src = place.photos[0].getUrl({maxWidth: 400, maxHeight: 400});
+        li.appendChild(photo);
+      }
+
+      placesList.appendChild(li);
+
+      // 画像をタップすると別の詳細ページにリダイレクト
+      li.addEventListener('click', function() {
+        window.location.href = `place.html?placeId=${place.place_id}`;
+      });
+    }
+  </script>
+
+  <!-- Google Maps API を読み込み -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAv5hL1qczznMmmfyl8CeFR9lzUw11L7SY&libraries=places&callback=initMap">
+  </script>
+</body>
+</html>
